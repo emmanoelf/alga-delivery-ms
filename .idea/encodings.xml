@@ -3,6 +3,7 @@
   <component name="Encoding">
     <file url="file://$PROJECT_DIR$/Microservices/Courier-Management/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/Microservices/Delivery-Tracking/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/Microservices/Gateway/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/Microservices/Service-Registry/src/main/java" charset="UTF-8" />
   </component>
 </project>
