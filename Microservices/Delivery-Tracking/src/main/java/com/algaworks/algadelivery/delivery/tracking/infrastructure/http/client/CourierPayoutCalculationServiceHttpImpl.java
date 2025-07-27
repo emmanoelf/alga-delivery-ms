@@ -8,14 +8,15 @@ import java.math.BigDecimal;
 
 @Service
 @RequiredArgsConstructor
-public class CourierPayoutCalculationServiceHttpImpl implements CourierPayoutCalculationService {
+public class CourierPayoutCalculationServiceHttpImpl
+        implements CourierPayoutCalculationService {
+
     private final CourierAPIClient courierAPIClient;
 
     @Override
     public BigDecimal calculatePayout(Double distanceInKm) {
-        CourierPayoutResultModel courierPayoutResultModel = courierAPIClient.payoutCalculation(
+        var courierPayoutResultModel = courierAPIClient.payoutCalculation(
                 new CourierPayoutCalculationInput(distanceInKm));
-
         return courierPayoutResultModel.getPayoutFee();
     }
 }

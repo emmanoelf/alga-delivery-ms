@@ -3,9 +3,10 @@ package com.algaworks.algadelivery.courier.management.domain.service;
 import com.algaworks.algadelivery.courier.management.api.model.CourierInput;
 import com.algaworks.algadelivery.courier.management.domain.model.Courier;
 import com.algaworks.algadelivery.courier.management.domain.repository.CourierRepository;
-import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
@@ -13,17 +14,18 @@ import java.util.UUID;
 @Transactional
 @RequiredArgsConstructor
 public class CourierRegistrationService {
+
     private final CourierRepository courierRepository;
 
-    public Courier create(CourierInput input) {
+    public Courier create(@Valid CourierInput input) {
         Courier courier = Courier.brandNew(input.getName(), input.getPhone());
-        return this.courierRepository.saveAndFlush(courier);
+        return courierRepository.saveAndFlush(courier);
     }
 
-    public Courier update(UUID courierId, CourierInput input) {
-        Courier courier = this.courierRepository.findById(courierId).orElseThrow();
-        courier.setName(input.getName());
+    public Courier update(UUID courierId, @Valid CourierInput input) {
+        Courier courier = courierRepository.findById(courierId).orElseThrow();
         courier.setPhone(input.getPhone());
-        return this.courierRepository.saveAndFlush(courier);
+        courier.setName(input.getName());
+        return courierRepository.saveAndFlush(courier);
     }
 }

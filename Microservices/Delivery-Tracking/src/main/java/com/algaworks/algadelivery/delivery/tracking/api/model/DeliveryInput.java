@@ -12,6 +12,7 @@ import java.util.List;
 @Getter
 @Setter
 public class DeliveryInput {
+
     @NotNull
     @Valid
     private ContactPointInput sender;
@@ -24,4 +25,5 @@ public class DeliveryInput {
     @Valid
     @Size(min = 1)
     private List<ItemInput> items;
+
 }

@@ -8,12 +8,16 @@ class DeliveryStatusTest {
 
     @Test
     void draft_canChangeToWaitingForCourier() {
-        assertTrue(DeliveryStatus.DRAFT.canChangeTo(DeliveryStatus.WAITING_FOR_COURIER));
+        assertTrue(
+                DeliveryStatus.DRAFT.canChangeTo(DeliveryStatus.WAITING_FOR_COURIER)
+        );
     }
 
     @Test
-    void draft_canNotChangeToInTransit(){
-        assertTrue(DeliveryStatus.DRAFT.canNotChangeTo(DeliveryStatus.IN_TRANSIT));
+    void draft_canChangeToInTransit() {
+        assertTrue(
+                DeliveryStatus.DRAFT.canNotChangeTo(DeliveryStatus.IN_TRANSIT)
+        );
     }
 
 }

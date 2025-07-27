@@ -20,46 +20,51 @@ class DeliveryRepositoryTest {
     private DeliveryRepository deliveryRepository;
 
     @Test
-    public void shouldPersist(){
+    public void shouldPersist() {
         Delivery delivery = Delivery.draft();
 
-        delivery.editPreparationDetails(this.createValidPreparationDetails());
+        delivery.editPreparationDetails(createdValidPreparationDetails());
 
         delivery.addItem("Computador", 2);
         delivery.addItem("Notebook", 2);
 
-        this.deliveryRepository.saveAndFlush(delivery);
+        deliveryRepository.saveAndFlush(delivery);
 
         Delivery persistedDelivery = deliveryRepository.findById(delivery.getId()).orElseThrow();
 
         assertEquals(2, persistedDelivery.getItems().size());
+
     }
 
-    private Delivery.PreparationDetails createValidPreparationDetails(){
+    private Delivery.PreparationDetails createdValidPreparationDetails() {
         ContactPoint sender = ContactPoint.builder()
-                .zipCode("12345-666")
-                .street("Rua Porto Alegre")
-                .number("123")
-                .complement("Apto 745")
-                .name("João Pedro")
-                .phone("(51) 93333-6587")
+                .zipCode("00000-000")
+                .street("Rua São Paulo")
+                .number("100")
+                .complement("Sala 401")
+                .name("João Silva")
+                .phone("(11) 90000-1234")
                 .build();
 
+
         ContactPoint recipient = ContactPoint.builder()
-                .zipCode("98765-432")
-                .street("Rua Letrados")
-                .number("456")
+                .zipCode("12331-342")
+                .street("Rua Brasil")
+                .number("500")
                 .complement("")
-                .name("Maria")
-                .phone("(51) 94444-4587")
+                .name("Maria Silva")
+                .phone("(11) 91345-1332")
                 .build();
+
+
 
         return Delivery.PreparationDetails.builder()
                 .sender(sender)
                 .recipient(recipient)
                 .distanceFee(new BigDecimal("15.00"))
-                .courierPayout(new BigDecimal("7.00"))
+                .courierPayout(new BigDecimal("5.00"))
                 .expectedDeliveryTime(Duration.ofHours(5))
                 .build();
     }
+
 }

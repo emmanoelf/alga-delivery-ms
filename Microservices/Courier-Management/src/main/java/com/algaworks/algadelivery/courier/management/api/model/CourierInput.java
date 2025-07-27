@@ -9,7 +9,6 @@ import lombok.Setter;
 public class CourierInput {
     @NotBlank
     private String name;
-
     @NotBlank
     private String phone;
 }

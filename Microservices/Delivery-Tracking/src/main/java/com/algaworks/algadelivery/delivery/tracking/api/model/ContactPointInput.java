@@ -7,6 +7,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class ContactPointInput {
+
     @NotBlank
     private String zipCode;
 
@@ -23,4 +24,5 @@ public class ContactPointInput {
 
     @NotBlank
     private String phone;
+
 }

@@ -1,6 +1,6 @@
 package com.algaworks.algadelivery.delivery.tracking.api.controller;
 
-import com.algaworks.algadelivery.delivery.tracking.api.model.CourierInput;
+import com.algaworks.algadelivery.delivery.tracking.api.model.CourierIdInput;
 import com.algaworks.algadelivery.delivery.tracking.api.model.DeliveryInput;
 import com.algaworks.algadelivery.delivery.tracking.domain.model.Delivery;
 import com.algaworks.algadelivery.delivery.tracking.domain.repository.DeliveryRepository;
@@ -24,43 +24,46 @@ public class DeliveryController {
 
     private final DeliveryPreparationService deliveryPreparationService;
     private final DeliveryCheckpointService deliveryCheckpointService;
+
     private final DeliveryRepository deliveryRepository;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Delivery draft(@RequestBody @Valid DeliveryInput input){
+    public Delivery draft(@RequestBody @Valid DeliveryInput input) {
         return deliveryPreparationService.draft(input);
     }
 
     @PutMapping("/{deliveryId}")
-    public Delivery draft(@PathVariable UUID deliveryId, @RequestBody @Valid DeliveryInput input){
+    public Delivery edit(@PathVariable UUID deliveryId,
+            @RequestBody @Valid DeliveryInput input) {
         return deliveryPreparationService.edit(deliveryId, input);
     }
 
     @GetMapping
-    public PagedModel<Delivery> findAll(@PageableDefault Pageable pageable){
-        return new PagedModel<>(this.deliveryRepository.findAll(pageable));
+    public PagedModel<Delivery> findAll(@PageableDefault Pageable pageable) {
+        return new PagedModel<>(deliveryRepository.findAll(pageable));
     }
 
     @GetMapping("/{deliveryId}")
-    public Delivery findById(@PathVariable UUID deliveryId){
-        return this.deliveryRepository.findById(deliveryId).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Delivery id not found.")
-        );
+    public Delivery findById(@PathVariable UUID deliveryId) {
+        return deliveryRepository.findById(deliveryId)
+                .orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
     @PostMapping("/{deliveryId}/placement")
-    public void place(@PathVariable UUID deliveryId){
-        this.deliveryCheckpointService.place(deliveryId);
+    public void place(@PathVariable UUID deliveryId) {
+        deliveryCheckpointService.place(deliveryId);
     }
 
     @PostMapping("/{deliveryId}/pickups")
-    public void pickup(@PathVariable UUID deliveryId, @Valid @RequestBody CourierInput input){
-        this.deliveryCheckpointService.pickUp(deliveryId, input.getCourierId());
+    public void pickup(@PathVariable UUID deliveryId,
+                       @Valid @RequestBody CourierIdInput input) {
+        deliveryCheckpointService.pickUp(deliveryId, input.getCourierId());
     }
 
     @PostMapping("/{deliveryId}/completion")
-    public void complete(@PathVariable UUID deliveryId){
-        this.deliveryCheckpointService.complete(deliveryId);
+    public void complete(@PathVariable UUID deliveryId) {
+        deliveryCheckpointService.complete(deliveryId);
     }
+
 }

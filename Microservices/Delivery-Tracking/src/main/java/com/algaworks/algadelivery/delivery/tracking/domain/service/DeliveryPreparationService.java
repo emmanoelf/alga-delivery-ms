@@ -7,9 +7,9 @@ import com.algaworks.algadelivery.delivery.tracking.domain.exception.DomainExcep
 import com.algaworks.algadelivery.delivery.tracking.domain.model.ContactPoint;
 import com.algaworks.algadelivery.delivery.tracking.domain.model.Delivery;
 import com.algaworks.algadelivery.delivery.tracking.domain.repository.DeliveryRepository;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -21,29 +21,27 @@ import java.util.UUID;
 public class DeliveryPreparationService {
 
     private final DeliveryRepository deliveryRepository;
+
     private final DeliveryTimeEstimationService deliveryTimeEstimationService;
     private final CourierPayoutCalculationService courierPayoutCalculationService;
 
     @Transactional
-    public Delivery draft(DeliveryInput input){
+    public Delivery draft(DeliveryInput input) {
         Delivery delivery = Delivery.draft();
-
-        this.handlePreparation(input, delivery);
-        return this.deliveryRepository.saveAndFlush(delivery);
+        handlePreparation(input, delivery);
+        return deliveryRepository.saveAndFlush(delivery);
     }
 
     @Transactional
-    public Delivery edit(UUID deliveryId, DeliveryInput input){
-        Delivery delivery = this.deliveryRepository.findById(deliveryId).orElseThrow(
-                () -> new DomainException("Delivery id not found."));
-
+    public Delivery edit(UUID deliveryId, DeliveryInput input) {
+        Delivery delivery = deliveryRepository.findById(deliveryId)
+                .orElseThrow(() -> new DomainException());
         delivery.removeItems();
-        this.handlePreparation(input, delivery);
-
-        return this.deliveryRepository.saveAndFlush(delivery);
+        handlePreparation(input, delivery);
+        return deliveryRepository.saveAndFlush(delivery);
     }
 
-    private void handlePreparation(DeliveryInput input, Delivery delivery){
+    private void handlePreparation(DeliveryInput input, Delivery delivery) {
         ContactPointInput senderInput = input.getSender();
         ContactPointInput recipientInput = input.getRecipient();
 
@@ -66,13 +64,13 @@ public class DeliveryPreparationService {
                 .build();
 
         DeliveryEstimate estimate = deliveryTimeEstimationService.estimate(sender, recipient);
-        BigDecimal calculatedPayout = this.courierPayoutCalculationService.calculatePayout(estimate.getDistanceInKm());
+        BigDecimal calculatedPayout = courierPayoutCalculationService.calculatePayout(estimate.getDistanceInKm());
 
-        BigDecimal distanceFee = this.calculateFee(estimate.getDistanceInKm());
+        BigDecimal distanceFee = calculateFee(estimate.getDistanceInKm());
 
-        Delivery.PreparationDetails preparationDetails = Delivery.PreparationDetails.builder()
-                .sender(sender)
+        var preparationDetails = Delivery.PreparationDetails.builder()
                 .recipient(recipient)
+                .sender(sender)
                 .expectedDeliveryTime(estimate.getEstimatedTime())
                 .courierPayout(calculatedPayout)
                 .distanceFee(distanceFee)
@@ -80,12 +78,15 @@ public class DeliveryPreparationService {
 
         delivery.editPreparationDetails(preparationDetails);
 
-        for(ItemInput itemInput : input.getItems()){
+        for (ItemInput itemInput : input.getItems()) {
             delivery.addItem(itemInput.getName(), itemInput.getQuantity());
         }
     }
 
-    private BigDecimal calculateFee(Double distanceInKm){
-        return new BigDecimal(3).multiply(new BigDecimal(distanceInKm)).setScale(2, RoundingMode.HALF_EVEN);
+    private BigDecimal calculateFee(Double distanceInKm) {
+        return new BigDecimal("3")
+                .multiply(new BigDecimal(distanceInKm))
+                .setScale(2, RoundingMode.HALF_EVEN);
     }
+
 }

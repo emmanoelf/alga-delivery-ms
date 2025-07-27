@@ -18,8 +18,9 @@ import java.util.UUID;
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Setter(AccessLevel.PRIVATE)
 public class Courier {
-    @EqualsAndHashCode.Include
+
     @Id
+    @EqualsAndHashCode.Include
     private UUID id;
 
     @Setter(AccessLevel.PUBLIC)
@@ -29,6 +30,7 @@ public class Courier {
     private String phone;
 
     private Integer fulfilledDeliveriesQuantity;
+
     private Integer pendingDeliveriesQuantity;
 
     private OffsetDateTime lastFulfilledDeliveryAt;
@@ -40,25 +42,26 @@ public class Courier {
         return Collections.unmodifiableList(this.pendingDeliveries);
     }
 
-    public static Courier brandNew(String name, String phone){
+    public static Courier brandNew(String name, String phone) {
         Courier courier = new Courier();
         courier.setId(UUID.randomUUID());
         courier.setName(name);
         courier.setPhone(phone);
         courier.setPendingDeliveriesQuantity(0);
         courier.setFulfilledDeliveriesQuantity(0);
-
         return courier;
     }
 
-    public void assign(UUID deliveryId){
-        this.pendingDeliveries.add(AssignedDelivery.pending(deliveryId, this));
-        this.setPendingDeliveriesQuantity(this.getPendingDeliveriesQuantity() + 1);
+    public void assign(UUID deliveryId) {
+        this.pendingDeliveries.add(
+                AssignedDelivery.pending(deliveryId, this)
+        );
+        this.pendingDeliveriesQuantity++;
     }
 
-    public void fulfill(UUID deliveryId){
+    public void fulfill(UUID deliveryId) {
         AssignedDelivery delivery = this.pendingDeliveries.stream().filter(
-                assignedDelivery -> assignedDelivery.getId().equals(deliveryId)
+                d -> d.getId().equals(deliveryId)
         ).findFirst().orElseThrow();
 
         this.pendingDeliveries.remove(delivery);
@@ -67,4 +70,5 @@ public class Courier {
         this.fulfilledDeliveriesQuantity++;
         this.lastFulfilledDeliveryAt = OffsetDateTime.now();
     }
+
 }

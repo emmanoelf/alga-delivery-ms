@@ -9,6 +9,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class ItemInput {
+
     @NotBlank
     private String name;
 

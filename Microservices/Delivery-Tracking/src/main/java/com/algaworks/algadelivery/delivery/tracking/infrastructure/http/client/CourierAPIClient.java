@@ -9,5 +9,5 @@ public interface CourierAPIClient {
 
     @PostExchange("/payout-calculation")
     CourierPayoutResultModel payoutCalculation(@RequestBody CourierPayoutCalculationInput input);
-
 }
+
